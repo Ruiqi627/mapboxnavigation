@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GeoJSON 连通图分析</title>
+    <script src="https://cdn.jsdelivr.net/npm/@turf/turf/turf.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        input[type="file"] {
+            margin-top: 10px;
+        }
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<h1>GeoJSON 连通图分析</h1>
+<p>请选择一个包含 GeoJSON 数据的 JSON 文件（例如 route.json）：</p>
+<input type="file" id="fileInput" accept=".json">
+<br>
+<button onclick="checkConnectivity()">检查连通性</button>
+<p id="result"></p>
+
+<script>
+    function checkConnectivity() {
+        const fileInput = document.getElementById("fileInput");
+        const file = fileInput.files[0];
+
+        // 检查是否选择了文件
+        if (!file) {
+            document.getElementById("result").innerText = "请先选择一个文件！";
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            try {
+                const geojson = JSON.parse(event.target.result);
+                console.log(geojson); // 输出解析的 GeoJSON 数据以供调试
+
+                // 检查连通性
+                const isConnected = checkIfConnected(geojson);
+                if (isConnected) {
+                    document.getElementById("result").innerText = "GeoJSON 中的几何形状是连通图。";
+                } else {
+                    document.getElementById("result").innerText = "GeoJSON 中的几何形状不是连通图。";
+                }
+            } catch (error) {
+                console.error("解析错误:", error); // 输出错误信息到控制台
+                document.getElementById("result").innerText = "无效的 GeoJSON 数据！";
+            }
+        };
+
+        reader.readAsText(file);
+    }
+
+    function checkIfConnected(geojson) {
+        const G = new Map();
+
+        // 收集所有线段的起点和终点
+        for (const feature of geojson.features) {
+            if (feature.geometry.type === 'LineString') {
+                const coords = feature.geometry.coordinates;
+                const start = coords[0].slice(0, 2).join(','); // 起点
+                const end = coords[coords.length - 1].slice(0, 2).join(','); // 终点
+
+                // 添加边
+                if (!G.has(start)) G.set(start, []);
+                if (!G.has(end)) G.set(end, []);
+                G.get(start).push(end);
+                G.get(end).push(start);
+            }
+        }
+
+        // 使用深度优先搜索 (DFS) 检查连通性
+        const visited = new Set();
+        const nodes = Array.from(G.keys());
+
+        // 如果没有节点，直接返回 true
+        if (nodes.length === 0) return true;
+
+        // 从第一个节点开始 DFS
+        function dfs(node) {
+            visited.add(node);
+            for (const neighbor of G.get(node)) {
+                if (!visited.has(neighbor)) {
+                    dfs(neighbor);
+                }
+            }
+        }
+
+        // 执行 DFS
+        dfs(nodes[0]);
+
+        // 检查是否所有节点都被访问过
+        return visited.size === nodes.length;
+    }
+</script>
+
+</body>
+</html>

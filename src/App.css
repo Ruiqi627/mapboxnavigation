@@ -36,3 +36,78 @@
     transform: rotate(360deg);
   }
 }
+
+
+.nav-button {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.directions-container {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  width: 300px; /* 组件宽度 */
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px; /* 行之间的间距 */
+}
+
+.circle {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.circle.red {
+  background-color: red;
+}
+
+.circle.blue {
+  background-color: blue;
+}
+
+.label-text {
+  flex-grow: 1;
+  font-size: 16px;
+}
+
+.select-button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  cursor: pointer;
+  border: 1px solid #007bff;
+  border-radius: 5px;
+  background-color: #fff;
+  color: #007bff;
+}
+
+.submit-button {
+  width: 100%; /* 提交按钮宽度填满 */
+  padding: 8px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px; /* 提交按钮与上面按钮的间距 */
+}
