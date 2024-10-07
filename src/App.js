@@ -298,45 +298,35 @@ const App = () => {
   useEffect(() => {
     if (!mapRef.current) return;
   
-    const handleMapClick = (e) => {
+     const handleMapClick = (e) => {
       const features = mapRef.current.queryRenderedFeatures(e.point, {
-        layers: ['extruded-polygon-layer'], 
+        layers: ['extruded-polygon-layer'],
       });
-  
+    
       if (features.length > 0) {
         const selectedFeature = features[0]; // 获取第一个特征
-        const featureName = selectedFeature.properties.name; // 获取特征类型
+        const featureName = selectedFeature.properties.name; // 获取特征名称
         const geometry = selectedFeature.geometry;
-  
+    
         let centroid;
-  
+    
         if (geometry.type === 'Polygon' || geometry.type === 'MultiPolygon') {
           // 使用 Turf.js 计算几何中心
           centroid = turf.centroid(geometry);
         } else {
-          alert('不支持的几何类型');
+          alert('不支持的几何类型'); // 提示不支持的几何类型
           return;
         }
-  
-        // 获取计算出的中心点
-        let [lng, lat] = centroid.geometry.coordinates;
-  
-        // 确保中心点在特征内部
-        const point = turf.point([lng, lat]);
-        const isInside = turf.booleanPointInPolygon(point, geometry);
-  
-        // 如果中心点不在多边形内，查找最近的边界点
-        if (!isInside) {
-          const nearest = turf.nearestPointOnLine(geometry, point);
-          lng = nearest.geometry.coordinates[0];
-          lat = nearest.geometry.coordinates[1];
-        }
-  
+    
+        // 获取计算出的中心点坐标
+        const [lng, lat] = centroid.geometry.coordinates; // 直接获取中心点坐标
+    
+        // 处理起点和终点的选择
         if (isSelectingStart) {
           setStartName(featureName);
           setStartPoint([lng, lat]);
           setIsSelectingStart(false);
-  
+    
           // 添加起点标记
           if (startMarkerRef.current) {
             startMarkerRef.current.remove(); // 移除之前的起点标记
@@ -348,7 +338,7 @@ const App = () => {
           setEndName(featureName);
           setEndPoint([lng, lat]);
           setIsSelectingEnd(false);
-  
+    
           // 添加终点标记
           if (endMarkerRef.current) {
             endMarkerRef.current.remove(); // 移除之前的终点标记
@@ -358,7 +348,7 @@ const App = () => {
             .addTo(mapRef.current);
         }
       } else {
-        alert('未选择到任何特征');
+        alert('未选择到任何特征'); // 提示未选择到特征
       }
     };
   
