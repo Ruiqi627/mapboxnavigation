@@ -319,7 +319,7 @@ const App = () => {
         }
   
         // 获取计算出的中心点
-        const [lng, lat] = centroid.geometry.coordinates;
+        let [lng, lat] = centroid.geometry.coordinates;
   
         // 确保中心点在特征内部
         const point = turf.point([lng, lat]);
